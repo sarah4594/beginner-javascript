@@ -23,11 +23,18 @@ ctx.lineWidth = MOVE_AMOUNT
 let hue = 0
 ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`
 
-ctx.beginPath() // start the drawing
-ctx.moveTo(x, y)
-ctx.lineTo(x, y)
-ctx.stroke()
+// listen for arrow skeys
+window.addEventListener('keydown', handleKey)
+shakeButton.addEventListener('click', clearCanvas)
 
+startDrawing()
+
+function startDrawing() {
+  ctx.beginPath() // start the drawing
+  ctx.moveTo(x, y)
+  ctx.lineTo(x, y)
+  ctx.stroke()
+}
 // write a draw function
 
 function draw({ key }) {
@@ -71,10 +78,7 @@ function handleKey(e) {
 function clearCanvas() {
   canvas.classList.add('shake')
   ctx.clearRect(0, 0, width, height)
-  ctx.beginPath() // start the drawing
-  ctx.moveTo(x, y)
-  ctx.lineTo(x, y)
-  ctx.stroke()
+  startDrawing()
   canvas.addEventListener(
     'animationend',
     function() {
@@ -84,7 +88,3 @@ function clearCanvas() {
     { once: true },
   )
 }
-
-// listen for arrow skeys
-window.addEventListener('keydown', handleKey)
-shakeButton.addEventListener('click', clearCanvas)
