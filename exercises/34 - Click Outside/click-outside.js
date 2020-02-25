@@ -1,45 +1,73 @@
 /* eslint-disable prettier/prettier */
 const cardButtons = document.querySelectorAll('.card button')
-const modalInner = document.querySelector('.modal-inner')
-const modalOuter = document.querySelector('.modal-outer')
+const cards = document.querySelectorAll('.card')
+const modal = document.querySelector('.modal')
+const overlay = document.querySelector('.overlay')
 
 function handleCardButtonClick(event) {
   const button = event.currentTarget
   // like querySelectorAll but the closest
   const card = button.closest('.card')
-  // Get image source
+  showCard(card)
+  // show modal
+  overlay.classList.add('open')
+}
+
+const preload = new Image()
+function showCard(card) {
   const imgSrc = card.querySelector('img').src
-  const desc = card.dataset.description
+  const { id, description } = card.dataset
   const name = card.querySelector('h2').textContent
   // populate modal with info
-  modalInner.innerHTML = `<img src="${imgSrc.replace(
-    '200',
-    '600',
-  )}" alt="${name}">
-  <p>${desc}</p>`
-  // show modal
-  modalOuter.classList.add('open')
+  modal.dataset.id = id
+  preload.src = imgSrc.replace('200', '600')
+  modal.innerHTML = `<div class="placeholder"></div>
+    <p>${description}</p>`
+
+  preload.onload = () => {
+    modal.innerHTML = `<img src="${preload.src}" alt="${name}">
+    <p>${description}</p>`
+  }
 }
 
 function closeModal() {
-  modalOuter.classList.remove('open')
+  overlay.classList.remove('open')
 }
 
-modalOuter.addEventListener('click', function(event) {
-  const isOutside = !event.target.closest('.modal-inner')
+overlay.addEventListener('click', function(event) {
+  const isOutside = !event.target.closest('.modal')
   if (isOutside) {
     closeModal()
   }
 })
 
-window.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-    closeModal()
+function getCard(offset) {
+  let current = parseInt(modal.dataset.id)
+  if (current + offset < 0) current = cards.length
+  const id = (current + offset) % cards.length
+  return document.querySelector(`.card[data-id="${id}"]`)
+}
+
+window.addEventListener('keyup', event => {
+  switch (event.key) {
+    case 'Escape':
+      closeModal()
+      break
+    case 'ArrowLeft': {
+      const prev = getCard(-1)
+      showCard(prev)
+      break
+    }
+    case 'ArrowRight': {
+      const next = getCard(+1)
+      showCard(next)
+      break
+    }
+    default:
+      break
   }
 })
 
 cardButtons.forEach(button => {
   button.addEventListener('click', handleCardButtonClick)
 })
-
-// Switch between??
