@@ -28,4 +28,22 @@ function handleTabClick(event) {
   tabPanel.hidden = false
 }
 
+function handleTabKey(event) {
+  if (event.keyCode !== 9) return
+  const offset = event.shiftKey ? -1 : 1
+  const currentButton = Array.from(tabButtons).filter(
+    button => button.getAttribute('aria-selected') === 'true',
+  )
+  const index = Array.from(tabButtons).indexOf(currentButton[0])
+  console.log(index)
+  const nextIndex = (index + tabButtons.length + offset) % tabButtons.length
+  const nextButton = tabButtons[nextIndex]
+  console.log(nextIndex)
+  nextButton.click()
+  nextButton.focus()
+  event.preventDefault()
+  event.stopPropagation()
+}
+tabButtons[0].focus()
 tabButtons.forEach(button => button.addEventListener('click', handleTabClick))
+tabButtons.forEach(button => button.addEventListener('keydown', handleTabKey))
